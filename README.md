@@ -330,10 +330,127 @@ Similarly, [WooCommerce Customizing Best Practices](https://woocommerce.com/docu
 ### Additional Points
 
 - Validate and Sanitize All User Inputs - Ensure that every piece of user-provided data is both validated and sanitized before processing or saving it. Detailed guidelines can be found in the [Validating, Sanitizing, and Escaping](https://docs.wpvip.com/security/validating-sanitizing-and-escaping/) resource.
-- Escape Output Rigorously - Always escape output when rendering data on the front end to prevent Cross-Site Scripting (XSS) vulnerabilities. This practice is thoroughly explained in the [WordPress Security: Escaping](https://developer.wordpress.org/apis/security/escaping/) documentation.
+- Escape Output Rigorously - Always escape output when rendering data on the front end to prevent Cross-Site Scripting (XSS) vulnerabilities. This practice is thoroughly explained in the [WordPress Security: Escaping](https://developer.wordpress.org/apis/security/escaping/) documentation. All of this is well summarized in [Rudrastyh’s guide](https://rudrastyh.com/wordpress/sanitize-escape-validate.html), ensuring robust security throughout your codebase.
 - Implement Nonces for Secure Actions - Always use nonces (number used once) to secure forms, AJAX requests, and other actions. Nonces help protect against Cross-Site Request Forgery (CSRF) by verifying that the request comes from a trusted source. For best practices on implementing nonces, refer to the [WordPress Nonces Documentation](https://developer.wordpress.org/apis/security/nonces/).
 - Avoid adding jQuery in Templates - Embedding jQuery code directly in your PHP templates is not recommended because:
   - It prevents the jQuery library from being deferred or asynchronously loaded.
   - It increases the risk of blocking rendering, which negatively impacts page speed.
 - Eliminate Deprecated Methods jQuery methods - Since our front-end does not load the jQuery Migrate script, it’s crucial to avoid any deprecated jQuery methods.
 - Proper Script Enqueuing - Use `wp_enqueue_script()` to load your custom scripts. This approach ensures that scripts are loaded in the proper order and can take advantage of deferring or async attributes.
+
+## PHPCS and WPCS
+
+Below is a step-by-step guide to installing PHP CodeSniffer (PHPCS) and the WordPress Coding Standards (WPCS) on macOS using Composer.
+
+- Ensure that Composer is installed on your Mac. You can verify this by running:
+```bash
+composer --version
+```
+
+- Open your Terminal and run the following command to install PHPCS globally:
+```bash
+composer global require "squizlabs/php_codesniffer=*"
+```
+
+- The global installation places PHPCS in your Composer vendor bin directory. You will need to add this directory to your system PATH. Open your shell configuration file with this:
+```bash
+vim ~/.zshrc
+```
+
+- Add this at the end of the file:
+
+```bash
+export PATH="$PATH:$HOME/.composer/vendor/bin"
+```
+
+`which phpcs` should now return you something like `/Users/jovanvukovic/.composer/vendor/bin/phpcs`
+
+- Install WordPress Coding Standards (WPCS) Globally:
+```bash
+composer global require "wp-coding-standards/wpcs"
+```
+
+- Configure PHPCS to Use WPCS (replace `jovanvukovic` with your user)
+```bash
+phpcs --config-set installed_paths /Users/jovanvukovic/.composer/vendor/wp-coding-standards/wpcs
+```
+
+- Run the following command to see a list of installed coding standards:
+```bash
+phpcs -i
+```
+
+- You should see something like this:
+```bash
+The installed coding standards are MySource, PEAR, PSR1, PSR2, Squiz, Zend, WordPress, WordPress-Extra, WordPress-Docs.
+```
+
+- Try to use phpcs from the command line in some WP project with this command for example:
+```
+phpcs wp-config.php
+```
+
+- If it's set properly you should see something like this:
+```
+FILE: /Users/jovanvukovic/Local Sites/imi-new/app/public/wp-config.php
+---------------------------------------------------------------------------------------------------------------
+FOUND 80 ERRORS AND 11 WARNINGS AFFECTING 35 LINES
+---------------------------------------------------------------------------------------------------------------
+  17 | ERROR   | [ ] The tag in position 1 should be the @package tag
+  20 | WARNING | [ ] PHP version not specified
+  20 | ERROR   | [ ] Missing @category tag in file comment
+  20 | ERROR   | [ ] Missing @author tag in file comment
+  20 | ERROR   | [ ] Missing @license tag in file comment
+  23 | ERROR   | [x] The open comment tag must be the only content on the line
+```
+
+### Debugging PHPCS setup
+
+- If you are getting errors like this one:
+```bash
+phpcs: Referenced sniff "Universal.NamingConventions.NoReservedKeywordParameterNames" does not exist
+```
+
+- First check if these are installed with `phpcs -i`, and if these are listed like this:
+```
+The installed coding standards are MySource, PEAR, PSR1, PSR2, PSR12, Squiz, Zend, WordPress, WordPress-Core, WordPress-Docs, WordPress-Extra, PHPCSUtils, Modernize, NormalizedArrays, Universal and PHPCompatibility
+```
+
+- We will have to set paths (Replace jovanvukovic with your user):
+```bash
+phpcs --config-set installed_paths /Users/jovanvukovic/.composer/vendor/wp-coding-standards/wpcs,/Users/jovanvukovic/.composer/vendor/phpcsstandards/phpcsutils,/Users/jovanvukovic/.composer/vendor/phpcsstandards/phpcsextra,/Users/jovanvukovic/.composer/vendor/phpcompatibility/php-compatibility
+```
+
+- But if you are missing something, for example `PHPCompatibility`, you will have to install it first, and then set the paths:
+```bash
+composer global require --dev phpcompatibility/php-compatibility
+```
+
+- `composer global show` should now show all the packages you have installed.
+
+### Integrating PHPCS (with WPCS) into VS Code
+
+- Install these two extensions for VS Code:
+  - phpcs - by [shevaua](https://marketplace.visualstudio.com/items?itemName=shevaua.phpcs)
+  - phpcbf - by [Per Soderlind](https://marketplace.visualstudio.com/items?itemName=persoderlind.vscode-phpcbf)
+
+- Once these are installed and activated, add this to VS Code `settings.json` file (Replace jovanvukovic with your user):
+```json
+"phpcs.enable": true,
+"phpcs.executablePath": "/Users/jovanvukovic/.composer/vendor/bin/phpcs",
+"phpcs.standard": "WordPress",
+"phpcbf.enable": true,
+"phpcbf.executablePath": "/Users/jovanvukovic/.composer/vendor/bin/phpcbf",
+"phpcbf.documentFormattingProvider": true,
+"phpcbf.onsave": false,
+"phpcbf.standard":"WordPress",
+"php.validate.enable": false,
+```
+
+- You can see yours `executablePath` by running:
+```bash
+which phpcs
+which phpcbf
+```
+
+- Restart VS Code, open some file in one of yours WP projects, and it should automatically report code style errors now.
