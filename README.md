@@ -454,3 +454,27 @@ which phpcbf
 ```
 
 - Restart VS Code, open some file in one of yours WP projects, and it should automatically report code style errors now.
+
+## WordPress Theme Development
+
+### Classic Themes
+
+Classic themes are built using PHP-based templates and follow a well-defined [template hierarchy](https://developer.wordpress.org/themes/basics/template-hierarchy/). This hierarchy determines how different types of content—such as pages, posts, archives, and more—are rendered by WordPress. In classic theme development, you work with a set of template files (like header.php, footer.php, single.php, etc.) and make use of template tags and functions to build and customize your site. For comprehensive guidance, refer to the [WordPress Theme Developer Handbook](https://developer.wordpress.org/themes/), which covers everything from initial theme setup and file structure to best practices for coding and security.
+
+[WordPress 101: Create a Theme from Scratch](https://www.youtube.com/watch?v=oTRZYnYQlmo) is a great starting point for Classic themes.
+
+
+### Block Themes and Full Site Editing (FSE)
+
+With the advent of the block editor (Gutenberg), WordPress has embraced a new paradigm for theme development: block themes. These themes use blocks as the building units, enabling a more visual and intuitive way to design layouts. Full Site Editing extends this concept, allowing developers and users to design and manage every aspect of a site through block-based templates, moving away from the traditional PHP templating system. To learn more about this modern approach, explore the [Block Editor Handbook](https://developer.wordpress.org/block-editor/) and documentation on Full Site Editing on WordPress.org.
+
+[Intermediate Theme Developer](https://learn.wordpress.org/course/intermediate-theme-developer/) is a good place to start learning about Block themes.
+
+### Important topics
+
+In addition to things mentioned above, these are also important topics to cover:
+- [Child Themes](https://developer.wordpress.org/themes/advanced-topics/child-themes/)
+- [Custom Functionality (functions.php)](https://developer.wordpress.org/themes/core-concepts/custom-functionality/)
+- [Template Files](https://developer.wordpress.org/themes/template-files-section/) - pay special attention on [Creating Custom Page Templates for Global Use](https://developer.wordpress.org/themes/template-files-section/page-template-files/#creating-custom-page-templates-for-global-use).
+- [Internationalization](https://developer.wordpress.org/themes/advanced-topics/internationalization/)
+- [Global Settings and Styles (theme.json)](https://developer.wordpress.org/themes/global-settings-and-styles/)
